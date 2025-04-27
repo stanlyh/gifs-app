@@ -6,6 +6,7 @@ import { environment } from '@environments/environment';
 import { Gif } from '../interfaces/gif.interface';
 import type { GiphyResponse } from '../interfaces/giphy.interface';
 import { GifMapper } from '../mapper/gif.mapper';
+import { consumerPollProducersForChange } from 'node_modules/@angular/core/weak_ref.d-DWHPG08n';
 
 const GIF_KEY = 'gifs';
 
@@ -29,8 +30,18 @@ export class GifService {
 
   private http = inject(HttpClient);
 
-  trendingGifs = signal<Gif[]>([]);
+  trendingGifs = signal<Gif[]>([]);  //[gif,gif,gif,gif,gif,gif,]
   trendingGifsLoading =  signal(true);
+
+  //[[gif,gif,gif],[gif,gif,gif],[gif,gif,gif],]
+  trendingGifGroup = computed<Gif[][]>(() => {
+    const groups = [];
+    for( let i = 0; i < this.trendingGifs().length; i += 3 ){
+      groups.push(this.trendingGifs().slice(i, i + 3));
+    }
+    //console.log(groups);
+    return groups
+  })
 
   searchHistory = signal<Record<string, Gif[]>>(loadFromLocalStorage());
   searchHistoryKeys = computed(() => Object.keys(this.searchHistory()));
@@ -56,7 +67,23 @@ export class GifService {
       const gifs = GifMapper.mapGiphyItemsToGifArray(resp.data);
       this.trendingGifs.set(gifs);
       this.trendingGifsLoading.set(false);
-      console.log( { gifs })
+      //console.log( { gifs })
+    });
+  }
+
+  //masonry
+  loadTrendingMasonryGifs() {
+    this.http.get<GiphyResponse>(`${ environment.giphyUrl }/gifs/masonry`,{
+      params:{
+        api_key: environment.giphyApiKey,
+        limit: 20,
+      }
+    })
+    .subscribe((resp) => {
+      const gifs = GifMapper.mapGiphyItemsToGifArray(resp.data);
+      this.trendingGifs.set(gifs);
+      this.trendingGifsLoading.set(false);
+      //console.log( { gifs })
     });
   }
 

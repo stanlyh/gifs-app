@@ -26,6 +26,12 @@ export class SideMenuOptionsComponent {
       route: '/dashboard/trending',
     },
     {
+      icon: 'fa-solid fa-chart-line',
+      label: 'Masonry',
+      sublabel: 'Gifs Populars',
+      route: '/dashboard/masonry',
+    },
+    {
       icon: 'fa-solid fa-magnifying-glass',
       label: 'Buscador',
       sublabel: 'Buscar gifs',

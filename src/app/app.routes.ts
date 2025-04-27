@@ -12,6 +12,10 @@ export const routes: Routes = [
         loadComponent: () => import('./gifs/pages/trending-page/trending-page.component'),
       },
       {
+        path: 'masonry',
+        loadComponent: () => import('./gifs/pages/trending-masonry-page/trending-masonry-page.component'),
+      },
+      {
         path: 'search',
         loadComponent: () => import('./gifs/pages/search-page/search-page.component'),
       },
